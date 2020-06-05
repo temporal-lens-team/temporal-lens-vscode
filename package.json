@@ -1,0 +1,64 @@
+{
+	"name": "temporal-lens-vscode",
+	"displayName": "temporal-lens-vscode",
+	"maintainers": [
+		"Nicolas BARBOTIN <nicolas@barbot.in>",
+		"Clément Poull"
+	],
+	"description": "Temporal Lens Rust VSCode extension - Temporal Lens is a telemetry infrastructure for Rust",
+	"version": "0.1.0",
+	"license": "(MIT OR Apache-2.0)",
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"profiling",
+		"telemetry",
+		"rust"
+	],
+	"preview": true,
+	"homepage": "https://github.com/temporal-lens-team/temporal-lens-vscode",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/temporal-lens-team/temporal-lens-vscode.git"
+	},
+	"bugs": {
+		"url": "https://github.com/temporal-lens-team/temporal-lens-vscode/issues"
+	},
+	"engines": {
+		"vscode": "^1.45.0"
+	},
+	"activationEvents": [
+		"onCommand:temporal-lens-vscode.helloWorld"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "temporal-lens-vscode.helloWorld",
+				"title": "Hello World"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.45.0",
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"eslint": "^6.8.0",
+		"@typescript-eslint/parser": "^2.30.0",
+		"@typescript-eslint/eslint-plugin": "^2.30.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.2",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	}
+}
