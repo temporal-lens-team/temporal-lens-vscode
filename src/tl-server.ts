@@ -46,11 +46,11 @@ export class TLServer {
         const serverProc = child_process.spawn(serverExecutable, { detached: true, cwd: path.dirname(serverExecutable) });
 
         serverProc.stdout.on("data", (data) => {
-            this.outputChannel.appendLine(data);
+            this.outputChannel.appendLine(data.toString().trim());
         });
 
         serverProc.stderr.on("data", (data) => {
-            this.outputChannel.appendLine(data);
+            this.outputChannel.appendLine(data.toString().trim());
         });
 
         serverProc.on("error", (err) => {
@@ -72,8 +72,6 @@ export class TLServer {
             }
         });
 
-        serverProc.unref(); //Not sure I should actually do that
-
         for(let i = 0; i < NUM_ATTEMPS; i++) {
             if(this.startError) {
                 break;
@@ -82,7 +80,7 @@ export class TLServer {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             const ok: boolean = await new Promise(resolve => {
-                http.get(this.getBaseURI(), (res) => resolve(res.statusCode === 200))
+                http.get(this.getBaseURI() + "/info", (res) => resolve(res.statusCode === 200))
                     .on("error", (err) => resolve(false))
                     .end();
             });
@@ -105,5 +103,18 @@ export class TLServer {
         http.get(this.getBaseURI() + "/serverctl/keep-alive").on("error", (e) => {
             console.log(`Failed to send keep-alive request to temporal-lens-server: ${e.message}`);
         }).end();
+    }
+
+    public shutdown() {
+        if(this.keepAliveInterval) {
+            clearInterval(this.keepAliveInterval);
+            this.keepAliveInterval = undefined;
+
+            http.get(this.getBaseURI() + "/serverctl/shutdown").on("error", (e) => {
+                console.log(`Failed to send shutdown request to temporal-lens-server: ${e.message}`);
+            }).end();
+
+            console.log("Shutting down temporal-lens-server...");
+        }
     }
 }
