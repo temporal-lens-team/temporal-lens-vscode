@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import child_process = require("child_process");
 import http = require("http");
 import fs = require("fs");
-import path = require("path");
 
 const NUM_ATTEMPS = 10;
 
@@ -32,7 +31,7 @@ export class TLServer {
         return this.keepAliveInterval !== undefined;
     }
 
-    public async start(serverExecutable: string): Promise<void> {
+    public async start(serverExecutable: string, workingDirectory: string): Promise<void> {
         if(this.keepAliveInterval) {
             //Already started
             return;
@@ -43,7 +42,7 @@ export class TLServer {
         }
 
         this.startError = undefined;
-        const serverProc = child_process.spawn(serverExecutable, { detached: true, cwd: path.dirname(serverExecutable) });
+        const serverProc = child_process.spawn(serverExecutable, { detached: true, cwd: workingDirectory });
 
         serverProc.stdout.on("data", (data) => {
             this.outputChannel.appendLine(data.toString().trim());

@@ -30,13 +30,16 @@ const DEFAULT_CONTENT = `<!DOCTYPE html>
 </body>
 </html>`;
 
-async function startTLS(context: vscode.ExtensionContext, serverExecPath: string)
+async function startTLS(context: vscode.ExtensionContext, serverExecPath: string, workingDirectory: string)
 {
 	try {
-		await TLServer.getInstance().start(serverExecPath);
+		await TLServer.getInstance().start(serverExecPath, workingDirectory);
 		console.log("temporal-lens-server up & running!");
 
-		const panel = vscode.window.createWebviewPanel("temporal-lens-webview", "Temporal Lens", { viewColumn: vscode.ViewColumn.Active, preserveFocus: false });
+		const panel = vscode.window.createWebviewPanel("temporal-lens-webview", "Temporal Lens",
+			{ viewColumn: vscode.ViewColumn.Active, preserveFocus: false },
+			{ enableScripts: true });
+
 		panel.webview.html = DEFAULT_CONTENT;
 
 		panel.iconPath = {
@@ -55,24 +58,33 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log("Initializing temporal-lens-vscode...");
 
 	let disposable = vscode.commands.registerCommand("temporal-lens-vscode.openWindow", () => {
+		if(currentPanel) {
+			currentPanel.reveal(vscode.ViewColumn.Active, false);
+			return;
+		}
+
 		const cfg = vscode.workspace.getConfiguration("temporal-lens-vscode");
 		const serverExecPath: string | null | undefined = cfg.get("serverExecutable");
+		const optWorkingDirectory: string | null | undefined = cfg.get("workingDirectory");
 
 		if(!serverExecPath) {
 			vscode.window.showErrorMessage("Sorry, but temporal-lens-server auto download is not yet supported.");
 			return;
 		}
 
-		if(currentPanel) {
-			currentPanel.reveal(vscode.ViewColumn.Active, false);
-			return;
+		let workingDirectory: string;
+
+		if(optWorkingDirectory) {
+			workingDirectory = optWorkingDirectory;
+		} else {
+			workingDirectory = path.dirname(serverExecPath);
 		}
 
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
 			title: "Starting temporal-lens-server...",
 			cancellable: false
-		}, (progress, token) => startTLS(context, serverExecPath));
+		}, (progress, token) => startTLS(context, serverExecPath, workingDirectory));
 	});
 
 	context.subscriptions.push(disposable);

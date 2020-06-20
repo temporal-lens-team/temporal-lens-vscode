@@ -60,6 +60,12 @@
 					"default": null,
 					"description": "Path to the temporal-lens-server executable. null means that vscode will download and update the executable automatically.",
 					"scope": "machine"
+				},
+				"temporal-lens-vscode.workingDirectory": {
+					"type": ["string", "null"],
+					"default": null,
+					"description": "Working directory for temporal-lens-server.",
+					"scope": "machine"
 				}
 			}
 		}
