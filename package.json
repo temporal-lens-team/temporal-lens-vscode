@@ -29,16 +29,40 @@
 		"vscode": "^1.45.0"
 	},
 	"activationEvents": [
-		"onCommand:temporal-lens-vscode.helloWorld"
+		"onCommand:temporal-lens-vscode.openWindow"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "temporal-lens-vscode.helloWorld",
-				"title": "Hello World"
+				"command": "temporal-lens-vscode.openWindow",
+				"title": "Open profiler window",
+				"icon": {
+					"light": "./media/tlicon-light.svg",
+					"dark": "./media/tlicon-dark.svg"
+				}
 			}
-		]
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"when": "resourceLangId == rust",
+					"command": "temporal-lens-vscode.openWindow",
+					"group": "navigation"
+				}
+			]
+		},
+		"configuration": {
+			"title": "Temporal Lens",
+			"properties": {
+				"temporal-lens-vscode.serverExecutable": {
+					"type": ["string", "null"],
+					"default": null,
+					"description": "Path to the temporal-lens-server executable. null means that vscode will download and update the executable automatically.",
+					"scope": "machine"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
